@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Self-hosted brand fonts -------------------------------------------- */
+/* Only weights 500 and 700 are shipped. Nothing declares another weight, and
+   font-synthesis is off globally, so the browser never fakes one. */
+
+@font-face {
+  font-family: 'Sentient';
+  src: url('/fonts/Sentient-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sentient';
+  src: url('/fonts/Sentient-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ClashGrotesk';
+  src: url('/fonts/ClashGrotesk-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ClashGrotesk';
+  src: url('/fonts/ClashGrotesk-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --surface: #fff8f5;
+    --surface-container: #f4ece8;
+    --surface-low: #faf2ee;
+    --surface-lowest: #ffffff;
+    --on-surface: #1e1b19;
+    --on-surface-variant: #4f453d;
+    --primary: #74593f;
+    --primary-container: #ffdab9;
+    --secondary-container: #fdd9b7;
+    --tertiary-container: #efddd6;
+    --outline: #80756c;
+    --outline-variant: #d2c4b9;
+    --divider: #f0eae2;
+    --accent: #a81746;
+    --accent-deep: #8c173a;
+    --brand-ink: #2a1115;
+
+    /* Clears the sticky header when an in-page anchor is targeted. */
+    --header-height: 64px;
+
+    scroll-behavior: smooth;
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --header-height: 80px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  * {
+    border-color: var(--outline-variant);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: #fff8f5;
+    color: var(--on-surface);
+    font-family: 'ClashGrotesk', system-ui, sans-serif;
+    font-weight: 500;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* Nothing may overflow the viewport horizontally at any width. */
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: 'Sentient', Georgia, serif;
+    font-weight: 700;
+    color: var(--on-surface);
+    letter-spacing: -0.01em;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* In-page anchors land below the sticky header rather than under it. */
+  [id] {
+    scroll-margin-top: calc(var(--header-height) + 16px);
+  }
+
+  ::selection {
+    background: var(--primary-container);
+    color: var(--brand-ink);
+  }
+}
+
+@layer components {
+  /* --- Glassmorphism ---------------------------------------------------- */
+  /* Used on exactly three surfaces: the scrolled header, overlay caption
+     panels, and the mobile navigation Sheet. Never under body copy. */
+
+  .glass-light {
+    background: rgba(255, 248, 245, 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-bottom-color: rgba(210, 196, 185, 0.45);
+    box-shadow: 0 8px 28px rgba(42, 17, 21, 0.06);
+  }
+
+  /* The navigation Sheet covers arbitrary page content rather than a known
+     backdrop, so it carries a heavier tint than the header — the frost stays,
+     the page behind stops reading through as text. */
+  .glass-panel {
+    background: rgba(255, 248, 245, 0.9);
+  }
+
+  .glass-dark {
+    background: rgba(30, 27, 25, 0.55);
+    -webkit-backdrop-filter: blur(18px) saturate(130%);
+    backdrop-filter: blur(18px) saturate(130%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #fff8f5;
+  }
+
+  /* Blur is expensive on mid-range Android; capped rather than dropped. */
+  @media (max-width: 767px) {
+    .glass-light {
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      backdrop-filter: blur(12px) saturate(140%);
+    }
+
+    .glass-dark {
+      -webkit-backdrop-filter: blur(12px) saturate(130%);
+      backdrop-filter: blur(12px) saturate(130%);
+    }
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-light {
+      background: rgba(255, 248, 245, 0.96);
+    }
+
+    .glass-dark {
+      background: rgba(30, 27, 25, 0.96);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .glass-light {
+      background: rgba(255, 248, 245, 0.96);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+
+    .glass-dark {
+      background: rgba(30, 27, 25, 0.96);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
+  /* logo.svg ships without fill attributes, so its paths default to black.
+     Painting it through a CSS mask tints it to --brand-ink without touching
+     the path data. */
+  .emblem-ink {
+    background-color: var(--brand-ink);
+    -webkit-mask-image: url('/logo.svg');
+    mask-image: url('/logo.svg');
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
